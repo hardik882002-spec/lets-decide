@@ -165,7 +165,7 @@ document.getElementById("decision").scrollIntoView({behavior:"smooth"});
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, addDoc, serverTimestamp, getDocs, getDoc, doc, updateDoc, increment, arrayUnion }
-
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
 apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
 authDomain: "let-s-decide-14d07.firebaseapp.com",
@@ -227,25 +227,25 @@ window.vote = async function(id,type,experienced,reason){
 
 const ref = doc(db,"decisions",id);
 
-const snapshot = await getDocs(collection(db,"decisions"));
-let decision;
+const decisionSnap = await getDoc(ref);
+const decision = decisionSnap.data();
 
-snapshot.forEach(d=>{
-if(d.id===id) decision=d.data();
-});
+/* FIX: ensure voters array exists */
 
-if(decision.voters.includes(voterId)){
+const voters = decision.voters || [];
+
+if(voters.includes(voterId)){
 alert("You already voted on this decision.");
 return;
 }
 
-let update={};
+let update = {};
 
 if(experienced){
 
-if(type==="YES") update.experiencedYes=increment(1);
-if(type==="NO") update.experiencedNo=increment(1);
-if(type==="WAIT") update.experiencedWait=increment(1);
+if(type==="YES") update.experiencedYes = increment(1);
+if(type==="NO") update.experiencedNo = increment(1);
+if(type==="WAIT") update.experiencedWait = increment(1);
 
 }else{
 
@@ -254,13 +254,13 @@ alert("Please explain your advice.");
 return;
 }
 
-if(type==="YES") update.adviceYes=increment(1);
-if(type==="NO") update.adviceNo=increment(1);
-if(type==="WAIT") update.adviceWait=increment(1);
+if(type==="YES") update.adviceYes = increment(1);
+if(type==="NO") update.adviceNo = increment(1);
+if(type==="WAIT") update.adviceWait = increment(1);
 
 }
 
-update.voters=arrayUnion(voterId);
+update.voters = arrayUnion(voterId);
 
 await updateDoc(ref,update);
 
