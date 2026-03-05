@@ -261,6 +261,22 @@ document.getElementById("verdict").style.display="block";
 
 document.getElementById("verdict").scrollIntoView({behavior:"smooth"});
 
+const decisionText = document.querySelector('input[type="text"]').value;
+const category = document.querySelectorAll("select")[0].value;
+const emotion = document.querySelectorAll("select")[1].value;
+const context = document.querySelector("textarea").value;
+
+saveDecision({
+  text: decisionText,
+  category: category,
+  emotion: emotion,
+  context: context,
+  verdict: random,
+  confidence: confidence
+});
+
+}
+
 }
 
 </script>
