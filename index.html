@@ -303,6 +303,7 @@ window.saveDecision({
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const analytics = getAnalytics(app);
   async function saveDecision(decisionData) {
   try {
     await addDoc(collection(db, "decisions"), {
@@ -321,8 +322,8 @@ window.saveDecision({
     console.error("Error saving decision:", error);
   }
 }
-  const analytics = getAnalytics(app);
-  window.saveDecision = saveDecision;
+
+window.saveDecision = saveDecision;
 </script>
 </body>
 </html>
