@@ -16,6 +16,15 @@ background:#0a0a0a;
 color:white;
 font-family:'Inter',sans-serif;
 text-align:center;
+
+/* grey doodle gradient */
+background-image:
+radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04) 0%, transparent 40%),
+radial-gradient(circle at 80% 60%, rgba(255,255,255,0.03) 0%, transparent 40%),
+linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+
+background-size: auto, auto, 40px 40px, 40px 40px;
 }
 
 .container{
@@ -57,10 +66,13 @@ font-weight:600;
 cursor:pointer;
 font-size:16px;
 margin-top:10px;
+transition:all .2s ease;
 }
 
 button:hover{
 background:#ff2020;
+transform:translateY(-2px);
+box-shadow:0 6px 20px rgba(255,60,60,.3);
 }
 
 .section{
@@ -74,6 +86,12 @@ border-radius:12px;
 margin:20px;
 display:inline-block;
 width:200px;
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+background:#151515;
 }
 
 .card h3{
@@ -108,6 +126,13 @@ background:#111;
 border:1px solid #333;
 color:white;
 border-radius:6px;
+transition:.2s;
+}
+
+input:focus, select:focus, textarea:focus{
+outline:none;
+border-color:#ff3b3b;
+box-shadow:0 0 0 2px rgba(255,60,60,.2);
 }
 
 footer{
@@ -133,8 +158,6 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 <button onclick="scrollToDecision()">Post My Decision</button>
 
 </div>
-
-<!-- Categories -->
 
 <div class="container section">
 
@@ -162,8 +185,6 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 
 </div>
 
-<!-- Example Poll -->
-
 <div class="container section">
 
 <h2>Example Decision</h2>
@@ -185,8 +206,6 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 
 </div>
 
-<!-- Post Decision -->
-
 <div class="container section" id="decision">
 
 <h2>Post Your Decision</h2>
@@ -195,9 +214,9 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 Voting closes in 24 hours.
 </p>
 
-<input type="text" placeholder="Should I quit my job for a startup?">
+<input id="decisionText" type="text" placeholder="Should I quit my job for a startup?">
 
-<select>
+<select id="category">
 <option>Select Category</option>
 <option>Career</option>
 <option>Relationship</option>
@@ -205,7 +224,7 @@ Voting closes in 24 hours.
 <option>Life</option>
 </select>
 
-<select>
+<select id="emotion">
 <option>How are you feeling?</option>
 <option>Confused</option>
 <option>Afraid</option>
@@ -214,13 +233,11 @@ Voting closes in 24 hours.
 <option>Stuck</option>
 </select>
 
-<textarea placeholder="Optional context..."></textarea>
+<textarea id="context" placeholder="Optional context..."></textarea>
 
 <button onclick="generateVerdict()">Decide Now</button>
 
 </div>
-
-<!-- Verdict -->
 
 <div class="container section" id="verdict" style="display:none;">
 
@@ -248,82 +265,69 @@ document.getElementById("decision").scrollIntoView({behavior:"smooth"});
 function generateVerdict(){
 
 let verdicts=["YES","NO","WAIT"];
-
 let random=verdicts[Math.floor(Math.random()*verdicts.length)];
-
 let confidence=Math.floor(Math.random()*40)+55;
 
 document.getElementById("verdictText").innerText=random;
-
 document.getElementById("confidence").innerText=confidence;
 
 document.getElementById("verdict").style.display="block";
-
 document.getElementById("verdict").scrollIntoView({behavior:"smooth"});
 
-const decisionText = document.querySelector('input[type="text"]').value;
-const category = document.querySelectorAll("select")[0].value;
-const emotion = document.querySelectorAll("select")[1].value;
-const context = document.querySelector("textarea").value;
+const decisionText=document.getElementById("decisionText").value;
+const category=document.getElementById("category").value;
+const emotion=document.getElementById("emotion").value;
+const context=document.getElementById("context").value;
 
 window.saveDecision({
-  text: decisionText,
-  category: category,
-  emotion: emotion,
-  context: context,
-  verdict: random,
-  confidence: confidence
+text:decisionText,
+category:category,
+emotion:emotion,
+context:context,
+verdict:random,
+confidence:confidence
 });
 
 }
 
-}
-
 </script>
+
 <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
-    authDomain: "let-s-decide-14d07.firebaseapp.com",
-    projectId: "let-s-decide-14d07",
-    storageBucket: "let-s-decide-14d07.firebasestorage.app",
-    messagingSenderId: "212548607958",
-    appId: "1:212548607958:web:84ee90b5371148aa700e77",
-    measurementId: "G-MZER5KGH0X"
-  };
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const analytics = getAnalytics(app);
-  async function saveDecision(decisionData) {
-  try {
-    await addDoc(collection(db, "decisions"), {
-      text: decisionData.text,
-      category: decisionData.category,
-      emotion: decisionData.emotion,
-      context: decisionData.context,
-      verdict: decisionData.verdict,
-      confidence: decisionData.confidence,
-      createdAt: serverTimestamp()
-    });
+const firebaseConfig = {
+apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
+authDomain: "let-s-decide-14d07.firebaseapp.com",
+projectId: "let-s-decide-14d07",
+storageBucket: "let-s-decide-14d07.appspot.com",
+messagingSenderId: "212548607958",
+appId: "1:212548607958:web:84ee90b5371148aa700e77"
+};
 
-    console.log("Decision saved successfully!");
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  } catch (error) {
-    console.error("Error saving decision:", error);
-  }
+async function saveDecision(data){
+
+await addDoc(collection(db,"decisions"),{
+text:data.text,
+category:data.category,
+emotion:data.emotion,
+context:data.context,
+verdict:data.verdict,
+confidence:data.confidence,
+createdAt:serverTimestamp()
+});
+
+console.log("Decision saved");
+
 }
 
-window.saveDecision = saveDecision;
+window.saveDecision=saveDecision;
+
 </script>
+
 </body>
 </html>
