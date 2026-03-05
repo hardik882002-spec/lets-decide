@@ -26,44 +26,38 @@ background-size:auto,auto,40px 40px,40px 40px;
 }
 
 .container{
-max-width:900px;
+max-width:1000px;
 margin:auto;
 padding:60px 20px;
 }
 
 h1{
-font-family:'Space Grotesk',sans-serif;
+font-family:'Space Grotesk';
 font-size:64px;
-letter-spacing:-2px;
 }
 
 h2{
 font-family:'Space Grotesk';
-font-size:36px;
 }
 
 .red{color:#ff3b3b;}
-
-.subtitle{font-size:18px;opacity:.8;margin-bottom:40px;}
 
 button{
 background:#ff3b3b;
 border:none;
 color:white;
-padding:12px 24px;
+padding:10px 18px;
 border-radius:8px;
-font-weight:600;
 cursor:pointer;
 margin:5px;
+font-weight:600;
 }
 
 button:hover{background:#ff2020;}
 
-.section{margin-top:100px;}
-
 input,select,textarea{
 width:100%;
-padding:12px;
+padding:10px;
 margin-top:10px;
 background:#111;
 border:1px solid #333;
@@ -71,28 +65,27 @@ color:white;
 border-radius:6px;
 }
 
-.feed-card{
+.decision-card{
 background:#111;
-padding:20px;
-margin:20px;
+margin:30px 0;
+padding:25px;
 border-radius:10px;
 }
 
+.grid{
+display:grid;
+grid-template-columns:2fr 1fr 1fr;
+gap:20px;
+align-items:center;
+}
+
 .chart{
-margin-top:10px;
 font-size:14px;
 opacity:.9;
 }
 
 textarea.reason{
-height:60px;
-}
-
-footer{
-margin-top:120px;
-padding:40px;
-border-top:1px solid #222;
-opacity:.7;
+height:70px;
 }
 
 </style>
@@ -104,57 +97,46 @@ opacity:.7;
 
 <h1>Let's <span class="red">Decide</span></h1>
 
-<p class="subtitle">
-Stop overthinking. Post your decision and get clarity from people who’ve faced the same situation.
-</p>
+<p>Stop overthinking. Post your decision and get clarity.</p>
 
 <button onclick="scrollToDecision()">Post My Decision</button>
 
 </div>
 
-<div class="container section" id="decision">
+<div class="container" id="decision">
 
 <h2>Post Your Decision</h2>
 
-<input id="decisionText" type="text" placeholder="Should I quit my job for a startup?">
-
-<select id="category">
-<option>Select Category</option>
-<option>Career</option>
-<option>Relationship</option>
-<option>Money</option>
-<option>Life</option>
-</select>
+<input id="decisionText" placeholder="Your decision question">
 
 <select id="emotion">
-<option>How are you feeling?</option>
+<option>Emotion</option>
 <option>Confused</option>
 <option>Afraid</option>
 <option>Angry</option>
 <option>Hopeful</option>
-<option>Stuck</option>
 </select>
 
-<textarea id="context" placeholder="Optional context..."></textarea>
+<textarea id="context" placeholder="Optional context"></textarea>
 
 <button onclick="postDecision()">Post Decision</button>
 
 </div>
 
-<div class="container section">
+<div class="container">
+
 <h2>Recent Decisions</h2>
+
 <div id="decisionFeed"></div>
+
 </div>
 
-<footer>
-<p>Let's Decide</p>
-<p>Anonymous. Fast. Clear.</p>
-</footer>
-
 <script>
+
 function scrollToDecision(){
 document.getElementById("decision").scrollIntoView({behavior:"smooth"});
 }
+
 </script>
 
 <script type="module">
@@ -175,18 +157,16 @@ arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
-authDomain: "let-s-decide-14d07.firebaseapp.com",
-projectId: "let-s-decide-14d07",
-storageBucket: "let-s-decide-14d07.appspot.com",
-messagingSenderId: "212548607958",
-appId: "1:212548607958:web:84ee90b5371148aa700e77"
+apiKey:"AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
+authDomain:"let-s-decide-14d07.firebaseapp.com",
+projectId:"let-s-decide-14d07",
+storageBucket:"let-s-decide-14d07.appspot.com",
+messagingSenderId:"212548607958",
+appId:"1:212548607958:web:84ee90b5371148aa700e77"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-
-/* DEVICE ID */
 
 let voterId = localStorage.getItem("voterId");
 
@@ -200,14 +180,12 @@ localStorage.setItem("voterId",voterId);
 window.postDecision = async function(){
 
 const text=document.getElementById("decisionText").value;
-const category=document.getElementById("category").value;
 const emotion=document.getElementById("emotion").value;
 const context=document.getElementById("context").value;
 
 await addDoc(collection(db,"decisions"),{
 
 text,
-category,
 emotion,
 context,
 
@@ -229,19 +207,66 @@ loadDecisions();
 
 }
 
-/* VOTE */
+/* START VOTE FLOW */
 
-window.vote = async function(id,type,experienced,reason){
+let pendingVote={};
 
-const ref = doc(db,"decisions",id);
-const snap = await getDoc(ref);
-const data = snap.data();
+window.startVote=function(id,type){
 
-const voters = data.voters || [];
+pendingVote={id,type};
 
-if(voters.includes(voterId)){
-alert("You already voted.");
+let experienced = confirm("Have you experienced the same situation yourself?");
+
+if(experienced){
+
+submitVote(true,"");
+
+}else{
+
+let advise = confirm("Do you still think you can advise?");
+
+if(!advise){
+
+alert("Thank you for being honest. Please vote on another decision.");
+
 return;
+
+}
+
+let reason = prompt("Why do you think you can advise? (max 200 words)");
+
+if(!reason || reason.length<10){
+
+alert("Please explain your reasoning.");
+
+return;
+
+}
+
+submitVote(false,reason);
+
+}
+
+}
+
+/* SUBMIT VOTE */
+
+async function submitVote(experienced,reason){
+
+const {id,type}=pendingVote;
+
+const ref=doc(db,"decisions",id);
+
+const snap=await getDoc(ref);
+
+const data=snap.data();
+
+if((data.voters||[]).includes(voterId)){
+
+alert("You already voted.");
+
+return;
+
 }
 
 let update={};
@@ -253,11 +278,6 @@ if(type==="NO") update.experiencedNo=increment(1);
 if(type==="WAIT") update.experiencedWait=increment(1);
 
 }else{
-
-if(reason.trim()===""){
-alert("Please explain your advice.");
-return;
-}
 
 if(type==="YES") update.adviceYes=increment(1);
 if(type==="NO") update.adviceNo=increment(1);
@@ -277,15 +297,13 @@ loadDecisions();
 
 function calculateVerdict(data){
 
-let yes=data.experiencedYes*0.7 + data.adviceYes*0.3;
-let no=data.experiencedNo*0.7 + data.adviceNo*0.3;
-let wait=data.experiencedWait*0.7 + data.adviceWait*0.3;
+let yes=data.experiencedYes*0.7+data.adviceYes*0.3;
+let no=data.experiencedNo*0.7+data.adviceNo*0.3;
+let wait=data.experiencedWait*0.7+data.adviceWait*0.3;
 
 let total=yes+no+wait;
 
-if(total===0){
-return {verdict:"WAIT",confidence:0};
-}
+if(total===0) return {verdict:"WAIT",confidence:0};
 
 let max=Math.max(yes,no,wait);
 
@@ -304,66 +322,69 @@ return {verdict,confidence};
 
 async function loadDecisions(){
 
-const snapshot = await getDocs(collection(db,"decisions"));
+const snapshot=await getDocs(collection(db,"decisions"));
 
 const feed=document.getElementById("decisionFeed");
+
 feed.innerHTML="";
 
-snapshot.forEach((docSnap)=>{
+snapshot.forEach(docSnap=>{
 
-const data = docSnap.data();
-
-data.experiencedYes=data.experiencedYes||0;
-data.experiencedNo=data.experiencedNo||0;
-data.experiencedWait=data.experiencedWait||0;
-
-data.adviceYes=data.adviceYes||0;
-data.adviceNo=data.adviceNo||0;
-data.adviceWait=data.adviceWait||0;
-
-data.voters=data.voters||[];
+const data=docSnap.data();
 
 const result=calculateVerdict(data);
 
 const card=document.createElement("div");
-card.className="feed-card";
+
+card.className="decision-card";
 
 card.innerHTML=`
 
+<div class="grid">
+
+<div>
+
 <h3>${data.text}</h3>
+
 <p>Emotion: ${data.emotion}</p>
 
-<div class="chart">
-<b>Experienced Votes</b><br>
-YES ${data.experiencedYes} |
-NO ${data.experiencedNo} |
-WAIT ${data.experiencedWait}
+<p>${data.context||""}</p>
+
+</div>
+
+<div>
+
+<button onclick="startVote('${docSnap.id}','YES')">YES</button>
+
+<button onclick="startVote('${docSnap.id}','WAIT')">WAIT</button>
+
+<button onclick="startVote('${docSnap.id}','NO')">NO</button>
+
 </div>
 
 <div class="chart">
-<b>Advice Votes</b><br>
-YES ${data.adviceYes} |
-NO ${data.adviceNo} |
-WAIT ${data.adviceWait}
-</div>
 
-<p><b>Verdict:</b> ${result.verdict} (${result.confidence}% confidence)</p>
+<b>Experienced</b><br>
 
-<p>Have you experienced this situation?</p>
-
-<button onclick="vote('${docSnap.id}','YES',true,'')">YES</button>
-<button onclick="vote('${docSnap.id}','NO',true,'')">NO</button>
-<button onclick="vote('${docSnap.id}','WAIT',true,'')">WAIT</button>
+YES ${data.experiencedYes||0}<br>
+NO ${data.experiencedNo||0}<br>
+WAIT ${data.experiencedWait||0}
 
 <br><br>
 
-<textarea class="reason" id="reason-${docSnap.id}" placeholder="Explain your advice if not experienced"></textarea>
+<b>Advice</b><br>
 
-<br>
+YES ${data.adviceYes||0}<br>
+NO ${data.adviceNo||0}<br>
+WAIT ${data.adviceWait||0}
 
-<button onclick="vote('${docSnap.id}','YES',false,document.getElementById('reason-${docSnap.id}').value)">Advice YES</button>
-<button onclick="vote('${docSnap.id}','NO',false,document.getElementById('reason-${docSnap.id}').value)">Advice NO</button>
-<button onclick="vote('${docSnap.id}','WAIT',false,document.getElementById('reason-${docSnap.id}').value)">Advice WAIT</button>
+<br><br>
+
+<b>Verdict:</b> ${result.verdict} (${result.confidence}%)
+
+</div>
+
+</div>
 
 `;
 
