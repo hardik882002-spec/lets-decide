@@ -249,6 +249,16 @@ Voting closes in 24 hours.
 
 </div>
 
+<!-- Live Decision Feed -->
+
+<div class="container section">
+
+<h2>Recent Decisions</h2>
+
+<div id="decisionFeed"></div>
+
+</div>
+
 <footer>
 
 <p>Let's Decide</p>
@@ -327,6 +337,69 @@ console.log("Decision saved");
 
 window.saveDecision=saveDecision;
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function saveDecision(data){
+
+await addDoc(collection(db,"decisions"),{
+text:data.text,
+category:data.category,
+emotion:data.emotion,
+context:data.context,
+verdict:data.verdict,
+confidence:data.confidence,
+
+yesVotes:0,
+noVotes:0,
+waitVotes:0,
+  
+createdAt:serverTimestamp()
+});
+
+console.log("Decision saved");
+
+}
+
+window.saveDecision=saveDecision;
+
+
+/* PASTE THE NEW FUNCTION HERE */
+
+async function loadDecisions(){
+
+const querySnapshot = await getDocs(collection(db,"decisions"));
+
+const feed=document.getElementById("decisionFeed");
+
+feed.innerHTML="";
+
+querySnapshot.forEach((doc)=>{
+
+const data=doc.data();
+
+const card=document.createElement("div");
+
+card.style.background="#111";
+card.style.padding="20px";
+card.style.margin="20px";
+card.style.borderRadius="10px";
+
+card.innerHTML=`
+<h3>${data.text}</h3>
+<p>Emotion: ${data.emotion}</p>
+
+<button onclick="vote('${doc.id}','YES')">YES</button>
+<button onclick="vote('${doc.id}','NO')">NO</button>
+<button onclick="vote('${doc.id}','WAIT')">WAIT</button>
+`;
+
+feed.appendChild(card);
+
+});
+window.onload = loadDecisions;
+
+}
 </script>
 
 </body>
