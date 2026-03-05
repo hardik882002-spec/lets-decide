@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Let's Decide</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -17,14 +16,13 @@ color:white;
 font-family:'Inter',sans-serif;
 text-align:center;
 
-/* grey doodle background */
 background-image:
 radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04) 0%, transparent 40%),
 radial-gradient(circle at 80% 60%, rgba(255,255,255,0.03) 0%, transparent 40%),
 linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
 linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
 
-background-size: auto, auto, 40px 40px, 40px 40px;
+background-size:auto,auto,40px 40px,40px 40px;
 }
 
 .container{
@@ -46,77 +44,28 @@ font-size:36px;
 margin-bottom:20px;
 }
 
-.red{
-color:#ff3b3b;
-}
+.red{color:#ff3b3b;}
 
-.subtitle{
-font-size:18px;
-opacity:.8;
-margin-bottom:40px;
-}
+.subtitle{font-size:18px;opacity:.8;margin-bottom:40px;}
 
 button{
 background:#ff3b3b;
 border:none;
 color:white;
-padding:14px 28px;
+padding:12px 24px;
 border-radius:8px;
 font-weight:600;
 cursor:pointer;
-font-size:16px;
-margin-top:10px;
-transition:all .2s ease;
+margin:5px;
 }
 
-button:hover{
-background:#ff2020;
-transform:translateY(-2px);
-box-shadow:0 6px 20px rgba(255,60,60,.3);
-}
+button:hover{background:#ff2020;}
 
-.section{
-margin-top:100px;
-}
-
-.card{
-background:#111;
-padding:25px;
-border-radius:12px;
-margin:20px;
-display:inline-block;
-width:200px;
-transition:.3s;
-}
-
-.card:hover{
-transform:translateY(-5px);
-background:#151515;
-}
-
-.poll{
-background:#111;
-padding:30px;
-border-radius:12px;
-margin-top:30px;
-}
-
-.bar{
-height:10px;
-background:#222;
-border-radius:5px;
-margin:10px 0;
-}
-
-.bar-fill{
-height:10px;
-background:#ff3b3b;
-border-radius:5px;
-}
+.section{margin-top:100px;}
 
 input,select,textarea{
 width:100%;
-padding:14px;
+padding:12px;
 margin-top:10px;
 background:#111;
 border:1px solid #333;
@@ -129,6 +78,16 @@ background:#111;
 padding:20px;
 margin:20px;
 border-radius:10px;
+}
+
+.chart{
+margin-top:10px;
+font-size:14px;
+opacity:.9;
+}
+
+textarea.reason{
+height:60px;
 }
 
 footer{
@@ -152,32 +111,6 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 </p>
 
 <button onclick="scrollToDecision()">Post My Decision</button>
-
-</div>
-
-<div class="container section">
-
-<h2>What Are You Deciding?</h2>
-
-<div class="card">
-<h3>Career</h3>
-<p>Quit job?<br>Switch field?<br>MBA?</p>
-</div>
-
-<div class="card">
-<h3>Relationship</h3>
-<p>Confess?<br>Break up?<br>Wait?</p>
-</div>
-
-<div class="card">
-<h3>Money</h3>
-<p>Invest?<br>Save?<br>Risk?</p>
-</div>
-
-<div class="card">
-<h3>Life</h3>
-<p>Move city?<br>Take leap?<br>Stay?</p>
-</div>
 
 </div>
 
@@ -206,33 +139,18 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 
 <textarea id="context" placeholder="Optional context..."></textarea>
 
-<button onclick="generateVerdict()">Decide Now</button>
-
-</div>
-
-<div class="container section" id="verdict" style="display:none;">
-
-<h2>Your Verdict</h2>
-
-<h1 class="red" id="verdictText">WAIT</h1>
-
-<p>Confidence: <span id="confidence">67</span>%</p>
+<button onclick="postDecision()">Post Decision</button>
 
 </div>
 
 <div class="container section">
-
 <h2>Recent Decisions</h2>
-
 <div id="decisionFeed"></div>
-
 </div>
 
 <footer>
-
 <p>Let's Decide</p>
 <p>Anonymous. Fast. Clear.</p>
-
 </footer>
 
 <script>
@@ -241,40 +159,12 @@ function scrollToDecision(){
 document.getElementById("decision").scrollIntoView({behavior:"smooth"});
 }
 
-function generateVerdict(){
-
-let verdicts=["YES","NO","WAIT"];
-let random=verdicts[Math.floor(Math.random()*verdicts.length)];
-let confidence=Math.floor(Math.random()*40)+55;
-
-document.getElementById("verdictText").innerText=random;
-document.getElementById("confidence").innerText=confidence;
-
-document.getElementById("verdict").style.display="block";
-document.getElementById("verdict").scrollIntoView({behavior:"smooth"});
-
-const decisionText=document.getElementById("decisionText").value;
-const category=document.getElementById("category").value;
-const emotion=document.getElementById("emotion").value;
-const context=document.getElementById("context").value;
-
-window.saveDecision({
-text:decisionText,
-category:category,
-emotion:emotion,
-context:context,
-verdict:random,
-confidence:confidence
-});
-
-}
-
 </script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
@@ -288,52 +178,130 @@ appId: "1:212548607958:web:84ee90b5371148aa700e77"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function saveDecision(data){
+/* ---------- DEVICE ID (Vote Lock) ---------- */
+
+let voterId = localStorage.getItem("voterId");
+
+if(!voterId){
+voterId = crypto.randomUUID();
+localStorage.setItem("voterId", voterId);
+}
+
+/* ---------- POST DECISION ---------- */
+
+window.postDecision = async function(){
+
+const text=document.getElementById("decisionText").value;
+const category=document.getElementById("category").value;
+const emotion=document.getElementById("emotion").value;
+const context=document.getElementById("context").value;
 
 await addDoc(collection(db,"decisions"),{
-text:data.text,
-category:data.category,
-emotion:data.emotion,
-context:data.context,
-verdict:data.verdict,
-confidence:data.confidence,
-yesVotes:0,
-noVotes:0,
-waitVotes:0,
+
+text,
+category,
+emotion,
+context,
+
+experiencedYes:0,
+experiencedNo:0,
+experiencedWait:0,
+
+adviceYes:0,
+adviceNo:0,
+adviceWait:0,
+
+voters:[],
+
 createdAt:serverTimestamp()
+
 });
 
 loadDecisions();
 
 }
 
-window.saveDecision=saveDecision;
+/* ---------- VOTE FUNCTION ---------- */
 
-async function vote(id,type){
+window.vote = async function(id,type,experienced,reason){
 
 const ref = doc(db,"decisions",id);
 
-if(type==="YES") await updateDoc(ref,{yesVotes:increment(1)});
-if(type==="NO") await updateDoc(ref,{noVotes:increment(1)});
-if(type==="WAIT") await updateDoc(ref,{waitVotes:increment(1)});
+const snapshot = await getDocs(collection(db,"decisions"));
+let decision;
+
+snapshot.forEach(d=>{
+if(d.id===id) decision=d.data();
+});
+
+if(decision.voters.includes(voterId)){
+alert("You already voted on this decision.");
+return;
+}
+
+let update={};
+
+if(experienced){
+
+if(type==="YES") update.experiencedYes=increment(1);
+if(type==="NO") update.experiencedNo=increment(1);
+if(type==="WAIT") update.experiencedWait=increment(1);
+
+}else{
+
+if(reason.trim()===""){
+alert("Please explain your advice.");
+return;
+}
+
+if(type==="YES") update.adviceYes=increment(1);
+if(type==="NO") update.adviceNo=increment(1);
+if(type==="WAIT") update.adviceWait=increment(1);
+
+}
+
+update.voters=arrayUnion(voterId);
+
+await updateDoc(ref,update);
 
 loadDecisions();
 
 }
 
-window.vote=vote;
+/* ---------- FINAL VERDICT ---------- */
+
+function calculateVerdict(data){
+
+let yes = data.experiencedYes*0.7 + data.adviceYes*0.3;
+let no = data.experiencedNo*0.7 + data.adviceNo*0.3;
+let wait = data.experiencedWait*0.7 + data.adviceWait*0.3;
+
+let max=Math.max(yes,no,wait);
+
+let verdict="WAIT";
+
+if(max===yes) verdict="YES";
+if(max===no) verdict="NO";
+
+let total=yes+no+wait;
+let confidence=Math.round((max/total)*100);
+
+return {verdict,confidence};
+
+}
+
+/* ---------- LOAD FEED ---------- */
 
 async function loadDecisions(){
 
 const snapshot = await getDocs(collection(db,"decisions"));
-
 const feed=document.getElementById("decisionFeed");
-
 feed.innerHTML="";
 
 snapshot.forEach((docSnap)=>{
 
 const data=docSnap.data();
+const result=calculateVerdict(data);
 
 const card=document.createElement("div");
 card.className="feed-card";
@@ -343,15 +311,37 @@ card.innerHTML=`
 <h3>${data.text}</h3>
 <p>Emotion: ${data.emotion}</p>
 
-<p>
-YES ${data.yesVotes || 0} |
-NO ${data.noVotes || 0} |
-WAIT ${data.waitVotes || 0}
-</p>
+<div class="chart">
+<b>Experienced Votes</b><br>
+YES ${data.experiencedYes} |
+NO ${data.experiencedNo} |
+WAIT ${data.experiencedWait}
+</div>
 
-<button onclick="vote('${docSnap.id}','YES')">YES</button>
-<button onclick="vote('${docSnap.id}','NO')">NO</button>
-<button onclick="vote('${docSnap.id}','WAIT')">WAIT</button>
+<div class="chart">
+<b>Advice Votes</b><br>
+YES ${data.adviceYes} |
+NO ${data.adviceNo} |
+WAIT ${data.adviceWait}
+</div>
+
+<p><b>Verdict:</b> ${result.verdict} (${result.confidence}% confidence)</p>
+
+<p>Have you experienced this situation?</p>
+
+<button onclick="vote('${docSnap.id}','YES',true,'')">YES</button>
+<button onclick="vote('${docSnap.id}','NO',true,'')">NO</button>
+<button onclick="vote('${docSnap.id}','WAIT',true,'')">WAIT</button>
+
+<br><br>
+
+<textarea class="reason" id="reason-${docSnap.id}" placeholder="If you haven't experienced this, explain your advice"></textarea>
+
+<br>
+
+<button onclick="vote('${docSnap.id}','YES',false,document.getElementById('reason-${docSnap.id}').value)">Advice YES</button>
+<button onclick="vote('${docSnap.id}','NO',false,document.getElementById('reason-${docSnap.id}').value)">Advice NO</button>
+<button onclick="vote('${docSnap.id}','WAIT',false,document.getElementById('reason-${docSnap.id}').value)">Advice WAIT</button>
 
 `;
 
