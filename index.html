@@ -287,6 +287,24 @@ document.getElementById("verdict").scrollIntoView({behavior:"smooth"});
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  async function saveDecision(decisionData) {
+  try {
+    await addDoc(collection(db, "decisions"), {
+      text: decisionData.text,
+      category: decisionData.category,
+      emotion: decisionData.emotion,
+      context: decisionData.context,
+      verdict: decisionData.verdict,
+      confidence: decisionData.confidence,
+      createdAt: serverTimestamp()
+    });
+
+    console.log("Decision saved successfully!");
+
+  } catch (error) {
+    console.error("Error saving decision:", error);
+  }
+}
   const analytics = getAnalytics(app);
 </script>
 </body>
