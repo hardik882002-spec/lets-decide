@@ -35,13 +35,11 @@ h1{
 font-family:'Space Grotesk',sans-serif;
 font-size:64px;
 letter-spacing:-2px;
-margin-bottom:10px;
 }
 
 h2{
 font-family:'Space Grotesk';
 font-size:36px;
-margin-bottom:20px;
 }
 
 .red{color:#ff3b3b;}
@@ -154,18 +152,28 @@ Stop overthinking. Post your decision and get clarity from people who’ve faced
 </footer>
 
 <script>
-
 function scrollToDecision(){
 document.getElementById("decision").scrollIntoView({behavior:"smooth"});
 }
-
 </script>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, getDoc, doc, updateDoc, increment, arrayUnion }
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+serverTimestamp,
+getDocs,
+getDoc,
+doc,
+updateDoc,
+increment,
+arrayUnion
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
 const firebaseConfig = {
 apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
 authDomain: "let-s-decide-14d07.firebaseapp.com",
@@ -178,16 +186,16 @@ appId: "1:212548607958:web:84ee90b5371148aa700e77"
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ---------- DEVICE ID (Vote Lock) ---------- */
+/* DEVICE ID */
 
 let voterId = localStorage.getItem("voterId");
 
 if(!voterId){
 voterId = crypto.randomUUID();
-localStorage.setItem("voterId", voterId);
+localStorage.setItem("voterId",voterId);
 }
 
-/* ---------- POST DECISION ---------- */
+/* POST DECISION */
 
 window.postDecision = async function(){
 
@@ -221,31 +229,28 @@ loadDecisions();
 
 }
 
-/* ---------- VOTE FUNCTION ---------- */
+/* VOTE */
 
 window.vote = async function(id,type,experienced,reason){
 
 const ref = doc(db,"decisions",id);
+const snap = await getDoc(ref);
+const data = snap.data();
 
-const decisionSnap = await getDoc(ref);
-const decision = decisionSnap.data();
-
-/* FIX: ensure voters array exists */
-
-const voters = decision.voters || [];
+const voters = data.voters || [];
 
 if(voters.includes(voterId)){
-alert("You already voted on this decision.");
+alert("You already voted.");
 return;
 }
 
-let update = {};
+let update={};
 
 if(experienced){
 
-if(type==="YES") update.experiencedYes = increment(1);
-if(type==="NO") update.experiencedNo = increment(1);
-if(type==="WAIT") update.experiencedWait = increment(1);
+if(type==="YES") update.experiencedYes=increment(1);
+if(type==="NO") update.experiencedNo=increment(1);
+if(type==="WAIT") update.experiencedWait=increment(1);
 
 }else{
 
@@ -254,13 +259,13 @@ alert("Please explain your advice.");
 return;
 }
 
-if(type==="YES") update.adviceYes = increment(1);
-if(type==="NO") update.adviceNo = increment(1);
-if(type==="WAIT") update.adviceWait = increment(1);
+if(type==="YES") update.adviceYes=increment(1);
+if(type==="NO") update.adviceNo=increment(1);
+if(type==="WAIT") update.adviceWait=increment(1);
 
 }
 
-update.voters = arrayUnion(voterId);
+update.voters=arrayUnion(voterId);
 
 await updateDoc(ref,update);
 
@@ -268,13 +273,19 @@ loadDecisions();
 
 }
 
-/* ---------- FINAL VERDICT ---------- */
+/* VERDICT */
 
 function calculateVerdict(data){
 
-let yes = data.experiencedYes*0.7 + data.adviceYes*0.3;
-let no = data.experiencedNo*0.7 + data.adviceNo*0.3;
-let wait = data.experiencedWait*0.7 + data.adviceWait*0.3;
+let yes=data.experiencedYes*0.7 + data.adviceYes*0.3;
+let no=data.experiencedNo*0.7 + data.adviceNo*0.3;
+let wait=data.experiencedWait*0.7 + data.adviceWait*0.3;
+
+let total=yes+no+wait;
+
+if(total===0){
+return {verdict:"WAIT",confidence:0};
+}
 
 let max=Math.max(yes,no,wait);
 
@@ -283,33 +294,35 @@ let verdict="WAIT";
 if(max===yes) verdict="YES";
 if(max===no) verdict="NO";
 
-let total=yes+no+wait;
 let confidence=Math.round((max/total)*100);
 
 return {verdict,confidence};
 
 }
 
-/* ---------- LOAD FEED ---------- */
+/* LOAD FEED */
 
 async function loadDecisions(){
 
-import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const snapshot = await getDocs(collection(db,"decisions"));
 
-const decisionSnap = await getDoc(ref);
-const decision = decisionSnap.data();
+const feed=document.getElementById("decisionFeed");
+feed.innerHTML="";
+
+snapshot.forEach((docSnap)=>{
 
 const data = docSnap.data();
 
-data.experiencedYes = data.experiencedYes || 0;
-data.experiencedNo = data.experiencedNo || 0;
-data.experiencedWait = data.experiencedWait || 0;
+data.experiencedYes=data.experiencedYes||0;
+data.experiencedNo=data.experiencedNo||0;
+data.experiencedWait=data.experiencedWait||0;
 
-data.adviceYes = data.adviceYes || 0;
-data.adviceNo = data.adviceNo || 0;
-data.adviceWait = data.adviceWait || 0;
+data.adviceYes=data.adviceYes||0;
+data.adviceNo=data.adviceNo||0;
+data.adviceWait=data.adviceWait||0;
 
-data.voters = data.voters || [];
+data.voters=data.voters||[];
+
 const result=calculateVerdict(data);
 
 const card=document.createElement("div");
@@ -344,7 +357,7 @@ WAIT ${data.adviceWait}
 
 <br><br>
 
-<textarea class="reason" id="reason-${docSnap.id}" placeholder="If you haven't experienced this, explain your advice"></textarea>
+<textarea class="reason" id="reason-${docSnap.id}" placeholder="Explain your advice if not experienced"></textarea>
 
 <br>
 
