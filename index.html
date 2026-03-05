@@ -164,7 +164,7 @@ document.getElementById("decision").scrollIntoView({behavior:"smooth"});
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, getDoc, doc, updateDoc, increment, arrayUnion }
 
 const firebaseConfig = {
 apiKey: "AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
@@ -294,13 +294,22 @@ return {verdict,confidence};
 
 async function loadDecisions(){
 
-const snapshot = await getDocs(collection(db,"decisions"));
-const feed=document.getElementById("decisionFeed");
-feed.innerHTML="";
+import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-snapshot.forEach((docSnap)=>{
+const decisionSnap = await getDoc(ref);
+const decision = decisionSnap.data();
 
-const data=docSnap.data();
+const data = docSnap.data();
+
+data.experiencedYes = data.experiencedYes || 0;
+data.experiencedNo = data.experiencedNo || 0;
+data.experiencedWait = data.experiencedWait || 0;
+
+data.adviceYes = data.adviceYes || 0;
+data.adviceNo = data.adviceNo || 0;
+data.adviceWait = data.adviceWait || 0;
+
+data.voters = data.voters || [];
 const result=calculateVerdict(data);
 
 const card=document.createElement("div");
