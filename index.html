@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Let's Decide</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+margin:0;
+background:#0a0a0a;
+color:white;
+font-family:'Inter',sans-serif;
+text-align:center;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:60px 20px;
+}
+
+h1{
+font-family:'Space Grotesk',sans-serif;
+font-size:64px;
+letter-spacing:-2px;
+margin-bottom:10px;
+}
+
+h2{
+font-family:'Space Grotesk';
+font-size:36px;
+margin-bottom:20px;
+}
+
+.red{
+color:#ff3b3b;
+}
+
+.subtitle{
+font-size:18px;
+opacity:.8;
+margin-bottom:40px;
+}
+
+button{
+background:#ff3b3b;
+border:none;
+color:white;
+padding:14px 28px;
+border-radius:8px;
+font-weight:600;
+cursor:pointer;
+font-size:16px;
+margin-top:10px;
+}
+
+button:hover{
+background:#ff2020;
+}
+
+.section{
+margin-top:100px;
+}
+
+.card{
+background:#111;
+padding:25px;
+border-radius:12px;
+margin:20px;
+display:inline-block;
+width:200px;
+}
+
+.card h3{
+font-family:'Space Grotesk';
+}
+
+.poll{
+background:#111;
+padding:30px;
+border-radius:12px;
+margin-top:30px;
+}
+
+.bar{
+height:10px;
+background:#222;
+border-radius:5px;
+margin:10px 0;
+}
+
+.bar-fill{
+height:10px;
+background:#ff3b3b;
+border-radius:5px;
+}
+
+input,select,textarea{
+width:100%;
+padding:14px;
+margin-top:10px;
+background:#111;
+border:1px solid #333;
+color:white;
+border-radius:6px;
+}
+
+footer{
+margin-top:120px;
+padding:40px;
+border-top:1px solid #222;
+opacity:.7;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Let's <span class="red">Decide</span></h1>
+
+<p class="subtitle">
+Stop overthinking. Post your decision and get clarity from people who’ve faced the same situation.
+</p>
+
+<button onclick="scrollToDecision()">Post My Decision</button>
+
+</div>
+
+<!-- Categories -->
+
+<div class="container section">
+
+<h2>What Are You Deciding?</h2>
+
+<div class="card">
+<h3>Career</h3>
+<p>Quit job?<br>Switch field?<br>MBA?</p>
+</div>
+
+<div class="card">
+<h3>Relationship</h3>
+<p>Confess?<br>Break up?<br>Wait?</p>
+</div>
+
+<div class="card">
+<h3>Money</h3>
+<p>Invest?<br>Save?<br>Risk?</p>
+</div>
+
+<div class="card">
+<h3>Life</h3>
+<p>Move city?<br>Take leap?<br>Stay?</p>
+</div>
+
+</div>
+
+<!-- Example Poll -->
+
+<div class="container section">
+
+<h2>Example Decision</h2>
+
+<div class="poll">
+
+<h3>Should I quit my stable job for a startup?</h3>
+
+<p>YES — 42%</p>
+<div class="bar"><div class="bar-fill" style="width:42%"></div></div>
+
+<p>NO — 37%</p>
+<div class="bar"><div class="bar-fill" style="width:37%"></div></div>
+
+<p>WAIT — 21%</p>
+<div class="bar"><div class="bar-fill" style="width:21%"></div></div>
+
+</div>
+
+</div>
+
+<!-- Post Decision -->
+
+<div class="container section" id="decision">
+
+<h2>Post Your Decision</h2>
+
+<p class="subtitle">
+Voting closes in 24 hours.
+</p>
+
+<input type="text" placeholder="Should I quit my job for a startup?">
+
+<select>
+<option>Select Category</option>
+<option>Career</option>
+<option>Relationship</option>
+<option>Money</option>
+<option>Life</option>
+</select>
+
+<select>
+<option>How are you feeling?</option>
+<option>Confused</option>
+<option>Afraid</option>
+<option>Angry</option>
+<option>Hopeful</option>
+<option>Stuck</option>
+</select>
+
+<textarea placeholder="Optional context..."></textarea>
+
+<button onclick="generateVerdict()">Decide Now</button>
+
+</div>
+
+<!-- Verdict -->
+
+<div class="container section" id="verdict" style="display:none;">
+
+<h2>Your Verdict</h2>
+
+<h1 class="red" id="verdictText">WAIT</h1>
+
+<p>Confidence: <span id="confidence">67</span>%</p>
+
+</div>
+
+<footer>
+
+<p>Let's Decide</p>
+<p>Anonymous. Fast. Clear.</p>
+
+</footer>
+
+<script>
+
+function scrollToDecision(){
+document.getElementById("decision").scrollIntoView({behavior:"smooth"});
+}
+
+function generateVerdict(){
+
+let verdicts=["YES","NO","WAIT"];
+
+let random=verdicts[Math.floor(Math.random()*verdicts.length)];
+
+let confidence=Math.floor(Math.random()*40)+55;
+
+document.getElementById("verdictText").innerText=random;
+
+document.getElementById("confidence").innerText=confidence;
+
+document.getElementById("verdict").style.display="block";
+
+document.getElementById("verdict").scrollIntoView({behavior:"smooth"});
+
+}
+
+</script>
+
+</body>
+</html>
