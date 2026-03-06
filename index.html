@@ -7,20 +7,36 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
+<!-- Chart.js for donut charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
 
 body{
 margin:0;
 background:#0a0a0a;
 color:white;
-font-family:'Inter';
+font-family:'Inter',sans-serif;
 text-align:center;
 
+/* Doodle background pattern */
 background-image:
-radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04) 0%, transparent 40%),
-radial-gradient(circle at 80% 60%, rgba(255,255,255,0.03) 0%, transparent 40%),
-linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' fill='none' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='2'>\
+<circle cx='50' cy='50' r='20'/>\
+<rect x='100' y='40' width='40' height='40'/>\
+<path d='M200 50 l30 -20 l30 20 l-30 20 z'/>\
+<line x1='300' y1='40' x2='340' y2='80'/>\
+<circle cx='60' cy='150' r='10'/>\
+<rect x='140' y='140' width='30' height='30'/>\
+<path d='M250 150 q20 -30 40 0'/>\
+<circle cx='330' cy='150' r='15'/>\
+<line x1='40' y1='250' x2='80' y2='250'/>\
+<rect x='120' y='240' width='50' height='20'/>\
+<path d='M220 240 l20 30 l20 -30'/>\
+<circle cx='320' cy='250' r='12'/>\
+</svg>");
+background-size:400px 400px;
 }
 
 .container{
@@ -32,6 +48,10 @@ padding:60px 20px;
 h1{
 font-family:'Space Grotesk';
 font-size:64px;
+}
+
+h2{
+font-family:'Space Grotesk';
 }
 
 .red{color:#ff3b3b;}
@@ -47,9 +67,7 @@ margin:6px;
 font-weight:600;
 }
 
-button:hover{
-background:#ff2020;
-}
+button:hover{background:#ff2020;}
 
 input,select,textarea{
 width:100%;
@@ -75,8 +93,14 @@ gap:25px;
 align-items:center;
 }
 
-.chart{
-font-size:14px;
+.chart-box{
+width:200px;
+margin:auto;
+}
+
+.chart-title{
+font-size:13px;
+margin-bottom:5px;
 opacity:.9;
 }
 
@@ -104,11 +128,6 @@ width:420px;
 text-align:center;
 }
 
-.modal h3{
-font-family:'Space Grotesk';
-margin-bottom:20px;
-}
-
 .modal textarea{
 width:100%;
 margin-top:15px;
@@ -117,7 +136,7 @@ border:1px solid #333;
 color:white;
 border-radius:6px;
 padding:10px;
-height:80px;
+height:90px;
 }
 
 .modal-buttons{
@@ -143,14 +162,39 @@ margin-top:20px;
 
 <h2>Post Your Decision</h2>
 
-<input id="decisionText" placeholder="Should I quit my job?">
+<input id="decisionText" placeholder="Your decision question">
+
+<select id="category">
+<option>Category</option>
+<option>Career</option>
+<option>Relationship</option>
+<option>Life</option>
+<option>Money</option>
+<option>Education</option>
+<option>Health</option>
+</select>
+
+<select id="gender">
+<option>Gender</option>
+<option>Male</option>
+<option>Female</option>
+<option>Prefer not to say</option>
+</select>
 
 <select id="emotion">
-<option>Emotion</option>
+<option>How you are feeling right now</option>
 <option>Confused</option>
 <option>Afraid</option>
-<option>Angry</option>
+<option>Stressed</option>
 <option>Hopeful</option>
+<option>Excited</option>
+<option>Lost</option>
+<option>Angry</option>
+<option>Curious</option>
+<option>Overwhelmed</option>
+<option>Optimistic</option>
+<option>Doubtful</option>
+<option>Calm</option>
 </select>
 
 <textarea id="context" placeholder="Optional context"></textarea>
@@ -173,6 +217,15 @@ margin-top:20px;
 
 function scrollToDecision(){
 document.getElementById("decision").scrollIntoView({behavior:"smooth"});
+}
+
+function openModal(content){
+document.getElementById("modalContainer").innerHTML=
+`<div class="modal-overlay"><div class="modal">${content}</div></div>`;
+}
+
+function closeModal(){
+document.getElementById("modalContainer").innerHTML="";
 }
 
 </script>
@@ -206,8 +259,6 @@ appId:"1:212548607958:web:84ee90b5371148aa700e77"
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
 
-/* DEVICE LOCK */
-
 let voterId=localStorage.getItem("voterId");
 
 if(!voterId){
@@ -220,60 +271,32 @@ localStorage.setItem("voterId",voterId);
 window.postDecision=async function(){
 
 const text=document.getElementById("decisionText").value;
+const category=document.getElementById("category").value;
+const gender=document.getElementById("gender").value;
 const emotion=document.getElementById("emotion").value;
 const context=document.getElementById("context").value;
 
 await addDoc(collection(db,"decisions"),{
-
 text,
+category,
+gender,
 emotion,
 context,
-
 experiencedYes:0,
 experiencedNo:0,
 experiencedWait:0,
-
 adviceYes:0,
 adviceNo:0,
 adviceWait:0,
-
 voters:[],
-
 createdAt:serverTimestamp()
-
 });
 
 loadDecisions();
 
 }
 
-/* MODAL SYSTEM */
-
-function openModal(content){
-
-document.getElementById("modalContainer").innerHTML=`
-
-<div class="modal-overlay">
-
-<div class="modal">
-
-${content}
-
-</div>
-
-</div>
-
-`;
-
-}
-
-function closeModal(){
-
-document.getElementById("modalContainer").innerHTML="";
-
-}
-
-/* VOTE FLOW */
+/* MODAL FLOW */
 
 let pendingVote={};
 
@@ -282,41 +305,28 @@ window.startVote=function(id,type){
 pendingVote={id,type};
 
 openModal(`
-
-<h3>Have you experienced this situation yourself?</h3>
-
+<h3>Have you experienced the same situation yourself?</h3>
 <div class="modal-buttons">
-
 <button onclick="experiencedYes()">YES</button>
 <button onclick="experiencedNo()">NO</button>
-
 </div>
-
 `);
 
 }
 
 window.experiencedYes=function(){
-
 closeModal();
-
 submitVote(true,"");
-
 }
 
 window.experiencedNo=function(){
 
 openModal(`
-
 <h3>Do you still think you can advise?</h3>
-
 <div class="modal-buttons">
-
 <button onclick="adviceYes()">YES</button>
 <button onclick="adviceNo()">NO</button>
-
 </div>
-
 `);
 
 }
@@ -324,17 +334,11 @@ openModal(`
 window.adviceNo=function(){
 
 openModal(`
-
 <h3>Thank you for being honest</h3>
-
 <p>Please vote on another decision.</p>
-
 <div class="modal-buttons">
-
 <button onclick="closeModal()">OK</button>
-
 </div>
-
 `);
 
 }
@@ -342,40 +346,30 @@ openModal(`
 window.adviceYes=function(){
 
 openModal(`
-
 <h3>Why do you think you can advise?</h3>
-
-<textarea id="adviceReason" maxlength="200"></textarea>
-
+<textarea id="reason" maxlength="200"></textarea>
 <div class="modal-buttons">
-
 <button onclick="submitAdvice()">SUBMIT</button>
-
 </div>
-
 `);
 
 }
 
 window.submitAdvice=function(){
 
-let reason=document.getElementById("adviceReason").value;
+let reason=document.getElementById("reason").value;
 
 if(reason.length<10){
-
-alert("Please explain briefly.");
-
+alert("Please explain briefly");
 return;
-
 }
 
 closeModal();
-
 submitVote(false,reason);
 
 }
 
-/* SUBMIT VOTE */
+/* VOTE */
 
 async function submitVote(experienced,reason){
 
@@ -384,31 +378,23 @@ const {id,type}=pendingVote;
 const ref=doc(db,"decisions",id);
 
 const snap=await getDoc(ref);
-
 const data=snap.data();
 
 if((data.voters||[]).includes(voterId)){
-
 alert("You already voted.");
-
 return;
-
 }
 
 let update={};
 
 if(experienced){
-
 if(type==="YES") update.experiencedYes=increment(1);
 if(type==="NO") update.experiencedNo=increment(1);
 if(type==="WAIT") update.experiencedWait=increment(1);
-
 }else{
-
 if(type==="YES") update.adviceYes=increment(1);
 if(type==="NO") update.adviceNo=increment(1);
 if(type==="WAIT") update.adviceWait=increment(1);
-
 }
 
 update.voters=arrayUnion(voterId);
@@ -421,11 +407,11 @@ loadDecisions();
 
 /* VERDICT */
 
-function calculateVerdict(data){
+function calculateVerdict(d){
 
-let yes=data.experiencedYes*0.7 + data.adviceYes*0.3;
-let no=data.experiencedNo*0.7 + data.adviceNo*0.3;
-let wait=data.experiencedWait*0.7 + data.adviceWait*0.3;
+let yes=d.experiencedYes*0.7 + d.adviceYes*0.3;
+let no=d.experiencedNo*0.7 + d.adviceNo*0.3;
+let wait=d.experiencedWait*0.7 + d.adviceWait*0.3;
 
 let total=yes+no+wait;
 
@@ -444,21 +430,21 @@ return {verdict,confidence};
 
 }
 
-/* LOAD DECISIONS */
+/* LOAD */
 
 async function loadDecisions(){
 
 const snapshot=await getDocs(collection(db,"decisions"));
 
 const feed=document.getElementById("decisionFeed");
-
 feed.innerHTML="";
 
 snapshot.forEach(docSnap=>{
 
-const data=docSnap.data();
+const d=docSnap.data();
+const result=calculateVerdict(d);
 
-const result=calculateVerdict(data);
+const id="chart"+docSnap.id;
 
 const card=document.createElement("div");
 
@@ -470,11 +456,10 @@ card.innerHTML=`
 
 <div>
 
-<h3>${data.text}</h3>
-
-<p>Emotion: ${data.emotion}</p>
-
-<p>${data.context||""}</p>
+<h3>${d.text}</h3>
+<p><b>Category:</b> ${d.category}</p>
+<p><b>Emotion:</b> ${d.emotion}</p>
+<p>${d.context||""}</p>
 
 </div>
 
@@ -484,35 +469,54 @@ card.innerHTML=`
 <button onclick="startVote('${docSnap.id}','WAIT')">WAIT</button>
 <button onclick="startVote('${docSnap.id}','NO')">NO</button>
 
+<p><b>Verdict:</b> ${result.verdict} (${result.confidence}%)</p>
+
 </div>
 
-<div class="chart">
+<div>
 
-<b>Experienced</b><br>
+<div class="chart-box">
+<div class="chart-title">Experienced</div>
+<canvas id="exp-${docSnap.id}"></canvas>
+</div>
 
-YES ${data.experiencedYes||0}<br>
-NO ${data.experiencedNo||0}<br>
-WAIT ${data.experiencedWait||0}
-
-<br><br>
-
-<b>Advice</b><br>
-
-YES ${data.adviceYes||0}<br>
-NO ${data.adviceNo||0}<br>
-WAIT ${data.adviceWait||0}
-
-<br><br>
-
-<b>Verdict:</b> ${result.verdict} (${result.confidence}%)
-
+<div class="chart-box">
+<div class="chart-title">Advice</div>
+<canvas id="adv-${docSnap.id}"></canvas>
 </div>
 
 </div>
 
+</div>
 `;
 
 feed.appendChild(card);
+
+/* Charts */
+
+new Chart(document.getElementById(`exp-${docSnap.id}`),{
+type:"doughnut",
+data:{
+labels:["YES","NO","WAIT"],
+datasets:[{
+data:[d.experiencedYes||0,d.experiencedNo||0,d.experiencedWait||0],
+backgroundColor:["#22c55e","#ef4444","#f59e0b"]
+}]
+},
+options:{plugins:{legend:{display:false}}}
+});
+
+new Chart(document.getElementById(`adv-${docSnap.id}`),{
+type:"doughnut",
+data:{
+labels:["YES","NO","WAIT"],
+datasets:[{
+data:[d.adviceYes||0,d.adviceNo||0,d.adviceWait||0],
+backgroundColor:["#22c55e","#ef4444","#f59e0b"]
+}]
+},
+options:{plugins:{legend:{display:false}}}
+});
 
 });
 
