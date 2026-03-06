@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Let's Decide</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
-<!-- Chart.js for donut charts -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
@@ -18,25 +19,6 @@ background:#0a0a0a;
 color:white;
 font-family:'Inter',sans-serif;
 text-align:center;
-
-/* Doodle background pattern */
-background-image:
-url("data:image/svg+xml;utf8,\
-<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400' fill='none' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='2'>\
-<circle cx='50' cy='50' r='20'/>\
-<rect x='100' y='40' width='40' height='40'/>\
-<path d='M200 50 l30 -20 l30 20 l-30 20 z'/>\
-<line x1='300' y1='40' x2='340' y2='80'/>\
-<circle cx='60' cy='150' r='10'/>\
-<rect x='140' y='140' width='30' height='30'/>\
-<path d='M250 150 q20 -30 40 0'/>\
-<circle cx='330' cy='150' r='15'/>\
-<line x1='40' y1='250' x2='80' y2='250'/>\
-<rect x='120' y='240' width='50' height='20'/>\
-<path d='M220 240 l20 30 l20 -30'/>\
-<circle cx='320' cy='250' r='12'/>\
-</svg>");
-background-size:400px 400px;
 }
 
 .container{
@@ -50,12 +32,6 @@ font-family:'Space Grotesk';
 font-size:64px;
 }
 
-h2{
-font-family:'Space Grotesk';
-}
-
-.red{color:#ff3b3b;}
-
 button{
 background:#ff3b3b;
 border:none;
@@ -67,7 +43,9 @@ margin:6px;
 font-weight:600;
 }
 
-button:hover{background:#ff2020;}
+button:hover{
+background:#ff2020;
+}
 
 input,select,textarea{
 width:100%;
@@ -84,6 +62,7 @@ background:#111;
 padding:25px;
 margin:25px 0;
 border-radius:12px;
+text-align:left;
 }
 
 .grid{
@@ -93,18 +72,16 @@ gap:25px;
 align-items:center;
 }
 
+.meta{
+font-size:14px;
+opacity:.9;
+line-height:1.7;
+}
+
 .chart-box{
-width:200px;
+width:180px;
 margin:auto;
 }
-
-.chart-title{
-font-size:13px;
-margin-bottom:5px;
-opacity:.9;
-}
-
-/* MODAL */
 
 .modal-overlay{
 position:fixed;
@@ -139,10 +116,6 @@ padding:10px;
 height:90px;
 }
 
-.modal-buttons{
-margin-top:20px;
-}
-
 </style>
 </head>
 
@@ -150,15 +123,13 @@ margin-top:20px;
 
 <div class="container">
 
-<h1>Let's <span class="red">Decide</span></h1>
+<h1>Let's Decide</h1>
 
 <p>Stop overthinking. Post your decision and get clarity.</p>
 
-<button onclick="scrollToDecision()">Post My Decision</button>
-
 </div>
 
-<div class="container" id="decision">
+<div class="container">
 
 <h2>Post Your Decision</h2>
 
@@ -181,6 +152,41 @@ margin-top:20px;
 <option>Prefer not to say</option>
 </select>
 
+<input id="age" type="number" placeholder="Your Age (16+ only)">
+
+<select id="state">
+<option>Where are you from</option>
+<option>Maharashtra</option>
+<option>Gujarat</option>
+<option>Delhi</option>
+<option>Karnataka</option>
+<option>Tamil Nadu</option>
+<option>Uttar Pradesh</option>
+<option>Madhya Pradesh</option>
+<option>Rajasthan</option>
+<option>Punjab</option>
+<option>Haryana</option>
+<option>West Bengal</option>
+<option>Bihar</option>
+<option>Odisha</option>
+<option>Kerala</option>
+<option>Assam</option>
+<option>Jharkhand</option>
+<option>Chhattisgarh</option>
+<option>Telangana</option>
+<option>Andhra Pradesh</option>
+<option>Himachal Pradesh</option>
+<option>Uttarakhand</option>
+<option>Goa</option>
+<option>Tripura</option>
+<option>Meghalaya</option>
+<option>Manipur</option>
+<option>Nagaland</option>
+<option>Sikkim</option>
+<option>Mizoram</option>
+<option>Arunachal Pradesh</option>
+</select>
+
 <select id="emotion">
 <option>How you are feeling right now</option>
 <option>Confused</option>
@@ -195,6 +201,14 @@ margin-top:20px;
 <option>Optimistic</option>
 <option>Doubtful</option>
 <option>Calm</option>
+</select>
+
+<select id="deadline">
+<option>Decision Deadline</option>
+<option value="3600">1 Hour</option>
+<option value="21600">6 Hours</option>
+<option value="86400">24 Hours</option>
+<option value="259200">3 Days</option>
 </select>
 
 <textarea id="context" placeholder="Optional context"></textarea>
@@ -212,23 +226,6 @@ margin-top:20px;
 </div>
 
 <div id="modalContainer"></div>
-
-<script>
-
-function scrollToDecision(){
-document.getElementById("decision").scrollIntoView({behavior:"smooth"});
-}
-
-function openModal(content){
-document.getElementById("modalContainer").innerHTML=
-`<div class="modal-overlay"><div class="modal">${content}</div></div>`;
-}
-
-function closeModal(){
-document.getElementById("modalContainer").innerHTML="";
-}
-
-</script>
 
 <script type="module">
 
@@ -248,7 +245,7 @@ arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
+apiKey:"AIza...",
 authDomain:"let-s-decide-14d07.firebaseapp.com",
 projectId:"let-s-decide-14d07",
 storageBucket:"let-s-decide-14d07.appspot.com",
@@ -266,37 +263,51 @@ voterId=crypto.randomUUID();
 localStorage.setItem("voterId",voterId);
 }
 
-/* POST DECISION */
-
 window.postDecision=async function(){
 
-const text=document.getElementById("decisionText").value;
-const category=document.getElementById("category").value;
-const gender=document.getElementById("gender").value;
-const emotion=document.getElementById("emotion").value;
-const context=document.getElementById("context").value;
+const age=parseInt(document.getElementById("age").value);
+
+if(age<16){
+alert("Only users 16+ can post decisions");
+return;
+}
 
 await addDoc(collection(db,"decisions"),{
-text,
-category,
-gender,
-emotion,
-context,
+
+text:decisionText.value,
+category:category.value,
+gender:gender.value,
+age:age,
+state:state.value,
+emotion:emotion.value,
+context:context.value,
+deadline:deadline.value,
+
 experiencedYes:0,
 experiencedNo:0,
 experiencedWait:0,
+
 adviceYes:0,
 adviceNo:0,
 adviceWait:0,
+
 voters:[],
+
 createdAt:serverTimestamp()
+
 });
 
 loadDecisions();
 
 }
 
-/* MODAL FLOW */
+function openModal(html){
+modalContainer.innerHTML=`<div class="modal-overlay"><div class="modal">${html}</div></div>`;
+}
+
+window.closeModal=function(){
+modalContainer.innerHTML="";
+}
 
 let pendingVote={};
 
@@ -305,28 +316,24 @@ window.startVote=function(id,type){
 pendingVote={id,type};
 
 openModal(`
-<h3>Have you experienced the same situation yourself?</h3>
-<div class="modal-buttons">
+<h3>Have you experienced this situation yourself?</h3>
 <button onclick="experiencedYes()">YES</button>
 <button onclick="experiencedNo()">NO</button>
-</div>
 `);
 
 }
 
 window.experiencedYes=function(){
 closeModal();
-submitVote(true,"");
+submitVote(true);
 }
 
 window.experiencedNo=function(){
 
 openModal(`
 <h3>Do you still think you can advise?</h3>
-<div class="modal-buttons">
 <button onclick="adviceYes()">YES</button>
 <button onclick="adviceNo()">NO</button>
-</div>
 `);
 
 }
@@ -335,10 +342,7 @@ window.adviceNo=function(){
 
 openModal(`
 <h3>Thank you for being honest</h3>
-<p>Please vote on another decision.</p>
-<div class="modal-buttons">
 <button onclick="closeModal()">OK</button>
-</div>
 `);
 
 }
@@ -348,30 +352,26 @@ window.adviceYes=function(){
 openModal(`
 <h3>Why do you think you can advise?</h3>
 <textarea id="reason" maxlength="200"></textarea>
-<div class="modal-buttons">
 <button onclick="submitAdvice()">SUBMIT</button>
-</div>
 `);
 
 }
 
 window.submitAdvice=function(){
 
-let reason=document.getElementById("reason").value;
+const r=document.getElementById("reason").value;
 
-if(reason.length<10){
+if(r.length<10){
 alert("Please explain briefly");
 return;
 }
 
 closeModal();
-submitVote(false,reason);
+submitVote(false);
 
 }
 
-/* VOTE */
-
-async function submitVote(experienced,reason){
+async function submitVote(experienced){
 
 const {id,type}=pendingVote;
 
@@ -405,8 +405,6 @@ loadDecisions();
 
 }
 
-/* VERDICT */
-
 function calculateVerdict(d){
 
 let yes=d.experiencedYes*0.7 + d.adviceYes*0.3;
@@ -430,21 +428,16 @@ return {verdict,confidence};
 
 }
 
-/* LOAD */
-
 async function loadDecisions(){
 
 const snapshot=await getDocs(collection(db,"decisions"));
 
-const feed=document.getElementById("decisionFeed");
-feed.innerHTML="";
+decisionFeed.innerHTML="";
 
 snapshot.forEach(docSnap=>{
 
 const d=docSnap.data();
 const result=calculateVerdict(d);
-
-const id="chart"+docSnap.id;
 
 const card=document.createElement("div");
 
@@ -457,9 +450,18 @@ card.innerHTML=`
 <div>
 
 <h3>${d.text}</h3>
-<p><b>Category:</b> ${d.category}</p>
-<p><b>Emotion:</b> ${d.emotion}</p>
-<p>${d.context||""}</p>
+
+<div class="meta">
+
+Category: ${d.category}<br>
+Gender: ${d.gender}<br>
+Age: ${d.age}<br>
+Location: ${d.state}<br>
+Emotion: ${d.emotion}<br>
+
+${d.context || ""}
+
+</div>
 
 </div>
 
@@ -475,24 +477,16 @@ card.innerHTML=`
 
 <div>
 
-<div class="chart-box">
-<div class="chart-title">Experienced</div>
-<canvas id="exp-${docSnap.id}"></canvas>
-</div>
+<canvas id="exp-${docSnap.id}" width="150"></canvas>
 
-<div class="chart-box">
-<div class="chart-title">Advice</div>
-<canvas id="adv-${docSnap.id}"></canvas>
-</div>
+<canvas id="adv-${docSnap.id}" width="150"></canvas>
 
 </div>
 
 </div>
 `;
 
-feed.appendChild(card);
-
-/* Charts */
+decisionFeed.appendChild(card);
 
 new Chart(document.getElementById(`exp-${docSnap.id}`),{
 type:"doughnut",
