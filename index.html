@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -17,7 +18,7 @@ body{
 margin:0;
 background:#0a0a0a;
 color:white;
-font-family:'Inter',sans-serif;
+font-family:'Inter';
 text-align:center;
 }
 
@@ -27,19 +28,30 @@ margin:auto;
 padding:60px 20px;
 }
 
-h1{
+.hero h1{
 font-family:'Space Grotesk';
-font-size:64px;
+font-size:72px;
+margin-bottom:10px;
+}
+
+.hero p{
+opacity:.8;
+font-size:18px;
+}
+
+.quote{
+font-style:italic;
+opacity:.7;
+margin-top:10px;
 }
 
 button{
 background:#ff3b3b;
 border:none;
 color:white;
-padding:10px 18px;
+padding:12px 22px;
 border-radius:8px;
 cursor:pointer;
-margin:6px;
 font-weight:600;
 }
 
@@ -49,7 +61,7 @@ background:#ff2020;
 
 input,select,textarea{
 width:100%;
-padding:10px;
+padding:12px;
 margin-top:10px;
 background:#111;
 border:1px solid #333;
@@ -57,30 +69,48 @@ color:white;
 border-radius:6px;
 }
 
+.section{
+margin-top:70px;
+}
+
+.cards{
+display:flex;
+justify-content:center;
+gap:30px;
+flex-wrap:wrap;
+margin-top:40px;
+}
+
+.card{
+background:#111;
+padding:25px;
+border-radius:10px;
+width:200px;
+}
+
+.card img{
+width:50px;
+margin-bottom:10px;
+}
+
 .decision-card{
 background:#111;
 padding:25px;
-margin:25px 0;
 border-radius:12px;
+margin-top:25px;
 text-align:left;
 }
 
 .grid{
 display:grid;
 grid-template-columns:2fr 1fr 1fr;
-gap:25px;
-align-items:center;
+gap:20px;
 }
 
 .meta{
 font-size:14px;
-opacity:.9;
+opacity:.85;
 line-height:1.7;
-}
-
-.chart-box{
-width:180px;
-margin:auto;
 }
 
 .modal-overlay{
@@ -89,7 +119,7 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.85);
+background:rgba(0,0,0,.85);
 display:flex;
 justify-content:center;
 align-items:center;
@@ -102,18 +132,10 @@ border:1px solid #333;
 padding:40px;
 border-radius:12px;
 width:420px;
-text-align:center;
 }
 
-.modal textarea{
-width:100%;
-margin-top:15px;
-background:#0a0a0a;
-border:1px solid #333;
-color:white;
-border-radius:6px;
-padding:10px;
-height:90px;
+.modal h3{
+font-family:'Space Grotesk';
 }
 
 </style>
@@ -121,15 +143,54 @@ height:90px;
 
 <body>
 
-<div class="container">
+<div class="container hero">
 
 <h1>Let's Decide</h1>
 
-<p>Stop overthinking. Post your decision and get clarity.</p>
+<p>Stop overthinking. Get clarity from people who faced the same situation.</p>
+
+<div class="quote">
+"Sometimes the hardest part is making the decision."
+</div>
 
 </div>
 
-<div class="container">
+<div class="container section">
+
+<h2>Why this platform exists</h2>
+
+<p style="opacity:.8; max-width:700px; margin:auto">
+Life decisions are hard. Career, relationships, money, or personal growth —  
+sometimes we need perspective from people who have actually been there.
+</p>
+
+<div class="cards">
+
+<div class="card">
+<img src="https://img.icons8.com/ios-filled/100/ffffff/briefcase.png">
+<p>Career Decisions</p>
+</div>
+
+<div class="card">
+<img src="https://img.icons8.com/ios-filled/100/ffffff/like.png">
+<p>Relationship Advice</p>
+</div>
+
+<div class="card">
+<img src="https://img.icons8.com/ios-filled/100/ffffff/money.png">
+<p>Money Choices</p>
+</div>
+
+<div class="card">
+<img src="https://img.icons8.com/ios-filled/100/ffffff/brain.png">
+<p>Life Decisions</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="container section">
 
 <h2>Post Your Decision</h2>
 
@@ -152,7 +213,7 @@ height:90px;
 <option>Prefer not to say</option>
 </select>
 
-<input id="age" type="number" placeholder="Your Age (16+ only)">
+<input id="age" type="number" placeholder="Your Age (16+)">
 
 <select id="state">
 <option>Where are you from</option>
@@ -162,29 +223,14 @@ height:90px;
 <option>Karnataka</option>
 <option>Tamil Nadu</option>
 <option>Uttar Pradesh</option>
-<option>Madhya Pradesh</option>
 <option>Rajasthan</option>
 <option>Punjab</option>
 <option>Haryana</option>
+<option>Kerala</option>
 <option>West Bengal</option>
 <option>Bihar</option>
-<option>Odisha</option>
-<option>Kerala</option>
 <option>Assam</option>
-<option>Jharkhand</option>
-<option>Chhattisgarh</option>
-<option>Telangana</option>
-<option>Andhra Pradesh</option>
-<option>Himachal Pradesh</option>
-<option>Uttarakhand</option>
 <option>Goa</option>
-<option>Tripura</option>
-<option>Meghalaya</option>
-<option>Manipur</option>
-<option>Nagaland</option>
-<option>Sikkim</option>
-<option>Mizoram</option>
-<option>Arunachal Pradesh</option>
 </select>
 
 <select id="emotion">
@@ -195,8 +241,6 @@ height:90px;
 <option>Hopeful</option>
 <option>Excited</option>
 <option>Lost</option>
-<option>Angry</option>
-<option>Curious</option>
 <option>Overwhelmed</option>
 <option>Optimistic</option>
 <option>Doubtful</option>
@@ -213,11 +257,13 @@ height:90px;
 
 <textarea id="context" placeholder="Optional context"></textarea>
 
+<br><br>
+
 <button onclick="postDecision()">Post Decision</button>
 
 </div>
 
-<div class="container">
+<div class="container section">
 
 <h2>Recent Decisions</h2>
 
@@ -237,15 +283,14 @@ collection,
 addDoc,
 serverTimestamp,
 getDocs,
-getDoc,
 doc,
 updateDoc,
 increment,
 arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig={
-apiKey:"AIza...",
+const firebaseConfig = {
+apiKey:"AIzaSy...",
 authDomain:"let-s-decide-14d07.firebaseapp.com",
 projectId:"let-s-decide-14d07",
 storageBucket:"let-s-decide-14d07.appspot.com",
@@ -253,22 +298,24 @@ messagingSenderId:"212548607958",
 appId:"1:212548607958:web:84ee90b5371148aa700e77"
 };
 
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-let voterId=localStorage.getItem("voterId");
-
-if(!voterId){
-voterId=crypto.randomUUID();
-localStorage.setItem("voterId",voterId);
+function openModal(html){
+modalContainer.innerHTML =
+`<div class="modal-overlay"><div class="modal">${html}</div></div>`;
 }
 
-window.postDecision=async function(){
+window.closeModal=function(){
+modalContainer.innerHTML="";
+}
 
-const age=parseInt(document.getElementById("age").value);
+window.postDecision = async function(){
 
-if(age<16){
-alert("Only users 16+ can post decisions");
+const age = parseInt(ageInput.value);
+
+if(age < 16){
+alert("Only 16+ users allowed");
 return;
 }
 
@@ -277,7 +324,7 @@ await addDoc(collection(db,"decisions"),{
 text:decisionText.value,
 category:category.value,
 gender:gender.value,
-age:age,
+age:ageInput.value,
 state:state.value,
 emotion:emotion.value,
 context:context.value,
@@ -297,220 +344,65 @@ createdAt:serverTimestamp()
 
 });
 
-loadDecisions();
-
-}
-
-function openModal(html){
-modalContainer.innerHTML=`<div class="modal-overlay"><div class="modal">${html}</div></div>`;
-}
-
-window.closeModal=function(){
-modalContainer.innerHTML="";
-}
-
-let pendingVote={};
-
-window.startVote=function(id,type){
-
-pendingVote={id,type};
+/* confirmation popup */
 
 openModal(`
-<h3>Have you experienced this situation yourself?</h3>
-<button onclick="experiencedYes()">YES</button>
-<button onclick="experiencedNo()">NO</button>
+<h3>Your decision has been submitted</h3>
+<p>You will receive clarity according to the time you selected.</p>
+<br>
+<button onclick="afterSubmit()">OKAY</button>
 `);
 
 }
 
-window.experiencedYes=function(){
-closeModal();
-submitVote(true);
-}
-
-window.experiencedNo=function(){
-
-openModal(`
-<h3>Do you still think you can advise?</h3>
-<button onclick="adviceYes()">YES</button>
-<button onclick="adviceNo()">NO</button>
-`);
-
-}
-
-window.adviceNo=function(){
-
-openModal(`
-<h3>Thank you for being honest</h3>
-<button onclick="closeModal()">OK</button>
-`);
-
-}
-
-window.adviceYes=function(){
-
-openModal(`
-<h3>Why do you think you can advise?</h3>
-<textarea id="reason" maxlength="200"></textarea>
-<button onclick="submitAdvice()">SUBMIT</button>
-`);
-
-}
-
-window.submitAdvice=function(){
-
-const r=document.getElementById("reason").value;
-
-if(r.length<10){
-alert("Please explain briefly");
-return;
-}
+window.afterSubmit=function(){
 
 closeModal();
-submitVote(false);
 
-}
+/* clear form */
 
-async function submitVote(experienced){
-
-const {id,type}=pendingVote;
-
-const ref=doc(db,"decisions",id);
-
-const snap=await getDoc(ref);
-const data=snap.data();
-
-if((data.voters||[]).includes(voterId)){
-alert("You already voted.");
-return;
-}
-
-let update={};
-
-if(experienced){
-if(type==="YES") update.experiencedYes=increment(1);
-if(type==="NO") update.experiencedNo=increment(1);
-if(type==="WAIT") update.experiencedWait=increment(1);
-}else{
-if(type==="YES") update.adviceYes=increment(1);
-if(type==="NO") update.adviceNo=increment(1);
-if(type==="WAIT") update.adviceWait=increment(1);
-}
-
-update.voters=arrayUnion(voterId);
-
-await updateDoc(ref,update);
+decisionText.value="";
+category.selectedIndex=0;
+gender.selectedIndex=0;
+age.value="";
+state.selectedIndex=0;
+emotion.selectedIndex=0;
+deadline.selectedIndex=0;
+context.value="";
 
 loadDecisions();
 
 }
 
-function calculateVerdict(d){
-
-let yes=d.experiencedYes*0.7 + d.adviceYes*0.3;
-let no=d.experiencedNo*0.7 + d.adviceNo*0.3;
-let wait=d.experiencedWait*0.7 + d.adviceWait*0.3;
-
-let total=yes+no+wait;
-
-if(total===0) return {verdict:"WAIT",confidence:0};
-
-let max=Math.max(yes,no,wait);
-
-let verdict="WAIT";
-
-if(max===yes) verdict="YES";
-if(max===no) verdict="NO";
-
-let confidence=Math.round((max/total)*100);
-
-return {verdict,confidence};
-
-}
+/* load decisions */
 
 async function loadDecisions(){
 
-const snapshot=await getDocs(collection(db,"decisions"));
+const snapshot = await getDocs(collection(db,"decisions"));
 
 decisionFeed.innerHTML="";
 
 snapshot.forEach(docSnap=>{
 
-const d=docSnap.data();
-const result=calculateVerdict(d);
+const d = docSnap.data();
 
-const card=document.createElement("div");
+const card = document.createElement("div");
 
 card.className="decision-card";
 
-card.innerHTML=`
-
-<div class="grid">
-
-<div>
-
+card.innerHTML = `
 <h3>${d.text}</h3>
 
 <div class="meta">
-
-Category: ${d.category}<br>
-Gender: ${d.gender}<br>
-Age: ${d.age}<br>
-Location: ${d.state}<br>
-Emotion: ${d.emotion}<br>
-
+Category: ${d.category} <br>
+Age: ${d.age} | Gender: ${d.gender} <br>
+Location: ${d.state} <br>
+Emotion: ${d.emotion} <br><br>
 ${d.context || ""}
-
-</div>
-
-</div>
-
-<div>
-
-<button onclick="startVote('${docSnap.id}','YES')">YES</button>
-<button onclick="startVote('${docSnap.id}','WAIT')">WAIT</button>
-<button onclick="startVote('${docSnap.id}','NO')">NO</button>
-
-<p><b>Verdict:</b> ${result.verdict} (${result.confidence}%)</p>
-
-</div>
-
-<div>
-
-<canvas id="exp-${docSnap.id}" width="150"></canvas>
-
-<canvas id="adv-${docSnap.id}" width="150"></canvas>
-
-</div>
-
 </div>
 `;
 
 decisionFeed.appendChild(card);
-
-new Chart(document.getElementById(`exp-${docSnap.id}`),{
-type:"doughnut",
-data:{
-labels:["YES","NO","WAIT"],
-datasets:[{
-data:[d.experiencedYes||0,d.experiencedNo||0,d.experiencedWait||0],
-backgroundColor:["#22c55e","#ef4444","#f59e0b"]
-}]
-},
-options:{plugins:{legend:{display:false}}}
-});
-
-new Chart(document.getElementById(`adv-${docSnap.id}`),{
-type:"doughnut",
-data:{
-labels:["YES","NO","WAIT"],
-datasets:[{
-data:[d.adviceYes||0,d.adviceNo||0,d.adviceWait||0],
-backgroundColor:["#22c55e","#ef4444","#f59e0b"]
-}]
-},
-options:{plugins:{legend:{display:false}}}
-});
 
 });
 
