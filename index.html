@@ -13,7 +13,7 @@ body{
 margin:0;
 background:#0a0a0a;
 color:white;
-font-family:'Inter',sans-serif;
+font-family:'Inter';
 text-align:center;
 
 background-image:
@@ -21,12 +21,10 @@ radial-gradient(circle at 20% 20%, rgba(255,255,255,0.04) 0%, transparent 40%),
 radial-gradient(circle at 80% 60%, rgba(255,255,255,0.03) 0%, transparent 40%),
 linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
 linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-
-background-size:auto,auto,40px 40px,40px 40px;
 }
 
 .container{
-max-width:1000px;
+max-width:1100px;
 margin:auto;
 padding:60px 20px;
 }
@@ -34,10 +32,6 @@ padding:60px 20px;
 h1{
 font-family:'Space Grotesk';
 font-size:64px;
-}
-
-h2{
-font-family:'Space Grotesk';
 }
 
 .red{color:#ff3b3b;}
@@ -49,11 +43,13 @@ color:white;
 padding:10px 18px;
 border-radius:8px;
 cursor:pointer;
-margin:5px;
+margin:6px;
 font-weight:600;
 }
 
-button:hover{background:#ff2020;}
+button:hover{
+background:#ff2020;
+}
 
 input,select,textarea{
 width:100%;
@@ -67,15 +63,15 @@ border-radius:6px;
 
 .decision-card{
 background:#111;
-margin:30px 0;
 padding:25px;
-border-radius:10px;
+margin:25px 0;
+border-radius:12px;
 }
 
 .grid{
 display:grid;
 grid-template-columns:2fr 1fr 1fr;
-gap:20px;
+gap:25px;
 align-items:center;
 }
 
@@ -84,8 +80,48 @@ font-size:14px;
 opacity:.9;
 }
 
-textarea.reason{
-height:70px;
+/* MODAL */
+
+.modal-overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.85);
+display:flex;
+justify-content:center;
+align-items:center;
+z-index:999;
+}
+
+.modal{
+background:#111;
+border:1px solid #333;
+padding:40px;
+border-radius:12px;
+width:420px;
+text-align:center;
+}
+
+.modal h3{
+font-family:'Space Grotesk';
+margin-bottom:20px;
+}
+
+.modal textarea{
+width:100%;
+margin-top:15px;
+background:#0a0a0a;
+border:1px solid #333;
+color:white;
+border-radius:6px;
+padding:10px;
+height:80px;
+}
+
+.modal-buttons{
+margin-top:20px;
 }
 
 </style>
@@ -107,7 +143,7 @@ height:70px;
 
 <h2>Post Your Decision</h2>
 
-<input id="decisionText" placeholder="Your decision question">
+<input id="decisionText" placeholder="Should I quit my job?">
 
 <select id="emotion">
 <option>Emotion</option>
@@ -130,6 +166,8 @@ height:70px;
 <div id="decisionFeed"></div>
 
 </div>
+
+<div id="modalContainer"></div>
 
 <script>
 
@@ -156,7 +194,7 @@ increment,
 arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
+const firebaseConfig={
 apiKey:"AIzaSyDGdMUs5Gd3vfyPJRCyeSImg_ygN_Otoe0",
 authDomain:"let-s-decide-14d07.firebaseapp.com",
 projectId:"let-s-decide-14d07",
@@ -165,19 +203,21 @@ messagingSenderId:"212548607958",
 appId:"1:212548607958:web:84ee90b5371148aa700e77"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
 
-let voterId = localStorage.getItem("voterId");
+/* DEVICE LOCK */
+
+let voterId=localStorage.getItem("voterId");
 
 if(!voterId){
-voterId = crypto.randomUUID();
+voterId=crypto.randomUUID();
 localStorage.setItem("voterId",voterId);
 }
 
 /* POST DECISION */
 
-window.postDecision = async function(){
+window.postDecision=async function(){
 
 const text=document.getElementById("decisionText").value;
 const emotion=document.getElementById("emotion").value;
@@ -207,7 +247,33 @@ loadDecisions();
 
 }
 
-/* START VOTE FLOW */
+/* MODAL SYSTEM */
+
+function openModal(content){
+
+document.getElementById("modalContainer").innerHTML=`
+
+<div class="modal-overlay">
+
+<div class="modal">
+
+${content}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+function closeModal(){
+
+document.getElementById("modalContainer").innerHTML="";
+
+}
+
+/* VOTE FLOW */
 
 let pendingVote={};
 
@@ -215,37 +281,97 @@ window.startVote=function(id,type){
 
 pendingVote={id,type};
 
-let experienced = confirm("Have you experienced the same situation yourself?");
+openModal(`
 
-if(experienced){
+<h3>Have you experienced this situation yourself?</h3>
+
+<div class="modal-buttons">
+
+<button onclick="experiencedYes()">YES</button>
+<button onclick="experiencedNo()">NO</button>
+
+</div>
+
+`);
+
+}
+
+window.experiencedYes=function(){
+
+closeModal();
 
 submitVote(true,"");
 
-}else{
+}
 
-let advise = confirm("Do you still think you can advise?");
+window.experiencedNo=function(){
 
-if(!advise){
+openModal(`
 
-alert("Thank you for being honest. Please vote on another decision.");
+<h3>Do you still think you can advise?</h3>
+
+<div class="modal-buttons">
+
+<button onclick="adviceYes()">YES</button>
+<button onclick="adviceNo()">NO</button>
+
+</div>
+
+`);
+
+}
+
+window.adviceNo=function(){
+
+openModal(`
+
+<h3>Thank you for being honest</h3>
+
+<p>Please vote on another decision.</p>
+
+<div class="modal-buttons">
+
+<button onclick="closeModal()">OK</button>
+
+</div>
+
+`);
+
+}
+
+window.adviceYes=function(){
+
+openModal(`
+
+<h3>Why do you think you can advise?</h3>
+
+<textarea id="adviceReason" maxlength="200"></textarea>
+
+<div class="modal-buttons">
+
+<button onclick="submitAdvice()">SUBMIT</button>
+
+</div>
+
+`);
+
+}
+
+window.submitAdvice=function(){
+
+let reason=document.getElementById("adviceReason").value;
+
+if(reason.length<10){
+
+alert("Please explain briefly.");
 
 return;
 
 }
 
-let reason = prompt("Why do you think you can advise? (max 200 words)");
-
-if(!reason || reason.length<10){
-
-alert("Please explain your reasoning.");
-
-return;
-
-}
+closeModal();
 
 submitVote(false,reason);
-
-}
 
 }
 
@@ -297,9 +423,9 @@ loadDecisions();
 
 function calculateVerdict(data){
 
-let yes=data.experiencedYes*0.7+data.adviceYes*0.3;
-let no=data.experiencedNo*0.7+data.adviceNo*0.3;
-let wait=data.experiencedWait*0.7+data.adviceWait*0.3;
+let yes=data.experiencedYes*0.7 + data.adviceYes*0.3;
+let no=data.experiencedNo*0.7 + data.adviceNo*0.3;
+let wait=data.experiencedWait*0.7 + data.adviceWait*0.3;
 
 let total=yes+no+wait;
 
@@ -318,7 +444,7 @@ return {verdict,confidence};
 
 }
 
-/* LOAD FEED */
+/* LOAD DECISIONS */
 
 async function loadDecisions(){
 
@@ -355,9 +481,7 @@ card.innerHTML=`
 <div>
 
 <button onclick="startVote('${docSnap.id}','YES')">YES</button>
-
 <button onclick="startVote('${docSnap.id}','WAIT')">WAIT</button>
-
 <button onclick="startVote('${docSnap.id}','NO')">NO</button>
 
 </div>
